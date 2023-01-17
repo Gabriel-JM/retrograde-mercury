@@ -3,11 +3,15 @@ import { Show } from 'solid-js'
 import { parseToken, setTokenData, tokenData } from '../../token/data'
 import { TokenModal } from '../../token/ui'
 import { XIcon } from './icons'
+import { LocalStorageAccess } from '../infra/storage'
 
 export function Header() {
   let tokenModalRef!: HTMLDialogElement
   const openTokenModal = () => tokenModalRef.show()
-  const removeTokenData = () => setTokenData()
+  function removeTokenData() {
+    setTokenData()
+    LocalStorageAccess.delete('current-token')
+  }
 
   const changeTokenButton = <button onClick={openTokenModal}>
     Set Token
@@ -34,7 +38,22 @@ export function Header() {
 
       <TokenModal
         ref={tokenModalRef}
-        onFinish={({ token }) => setTokenData(parseToken(token))}
+        onFinish={({ token, saveInStorage }) => {
+          const tokenData = parseToken(token)
+          setTokenData(tokenData)
+          LocalStorageAccess.set('current-token', tokenData)
+
+          if (!saveInStorage) return
+
+          const tokens = LocalStorageAccess.get<{enterpriseId: string}[]>('tokens')
+          const alreadyExists = tokens?.find(
+            token => token.enterpriseId === tokenData.enterpriseId
+          )
+
+          if (alreadyExists) return
+
+          LocalStorageAccess.addIn('tokens', tokenData)
+        }}
       />
     </>
   )

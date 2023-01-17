@@ -3,7 +3,7 @@ import { checkCurrentToken } from '../../token/data/check-current-token'
 import './App.css'
 
 function App() {
-  checkCurrentToken()
+  setInterval(checkCurrentToken, 50)
 
   return (
     <Header />
