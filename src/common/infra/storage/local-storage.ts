@@ -24,9 +24,7 @@ export class LocalStorageAccess {
 
     const items = LocalStorageAccess.get<any[]>(key)
 
-    if (items) {
-      LocalStorageAccess.set(key, [...items, data])
-    }
+    LocalStorageAccess.set(key, [...items ?? [], data])
   }
 
   static delete(key: string) {

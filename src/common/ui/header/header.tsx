@@ -1,9 +1,9 @@
 import './header.css'
 import { Show } from 'solid-js'
-import { parseToken, setTokenData, tokenData } from '../../token/data'
-import { TokenModal } from '../../token/ui'
-import { XIcon } from './icons'
-import { LocalStorageAccess } from '../infra/storage'
+import { parseToken, setTokenData, TokenData, tokenData } from '../../../token/data'
+import { TokenModal } from '../../../token/ui'
+import { XIcon } from '../icons'
+import { LocalStorageAccess } from '../../infra/storage'
 
 export function Header() {
   let tokenModalRef!: HTMLDialogElement
@@ -45,10 +45,12 @@ export function Header() {
 
           if (!saveInStorage) return
 
-          const tokens = LocalStorageAccess.get<{enterpriseId: string}[]>('tokens')
+          const tokens = LocalStorageAccess.get<TokenData[]>('tokens')
           const alreadyExists = tokens?.find(
             token => token.enterpriseId === tokenData.enterpriseId
           )
+
+          console.log({ alreadyExists })
 
           if (alreadyExists) return
 

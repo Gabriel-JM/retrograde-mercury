@@ -1,0 +1,39 @@
+[token-modal] {
+  gap: 12%;
+}
+
+[token-modal] > form {
+  height: 85%;
+  margin: 0;
+}
+
+.token-modal-list-container {
+  height: 85%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 12%;
+  border-left: 1px solid #546e7a;
+}
+
+.token-modal-list-container ul {
+  padding: 0;
+}
+
+.token-modal-list-container li {
+  background-color: var(--secondary);
+  list-style: none;
+  margin: 0;
+  width: fit-content;
+  padding: 10px 24px;
+  font-size: 1rem;
+  color: white;
+  border-radius: 50px;
+}
+
+.token-modal-list-container li.token-in-use {
+  background-color: var(--primary);
+}
+
+.token-modal-list-container li:not(:last-child) {
+  margin-bottom: 16px;
+}

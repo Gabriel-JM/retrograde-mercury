@@ -16,7 +16,7 @@
 
 .token-data-display {
   background-color: var(--primary);
-  color: #ddd;
+  color: white;
   padding: 8px 24px;
   border-radius: 50px;
   cursor: pointer;

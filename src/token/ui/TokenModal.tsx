@@ -1,4 +1,7 @@
-import { createSignal, Show } from 'solid-js'
+import './token-modal.css'
+import { createEffect, createSignal, For, Show } from 'solid-js'
+import { LocalStorageAccess } from '../../common/infra/storage'
+import { tokenData, TokenData } from '../data'
 
 interface TokenModalProps {
   ref: HTMLDialogElement
@@ -8,7 +11,8 @@ interface TokenModalProps {
 export function TokenModal(props: TokenModalProps) {
   let formRef: HTMLFormElement
   const [error, setError] = createSignal('')
-  
+  const [tokens, setTokens] = createSignal(null)
+
   function closeModal() {
     formRef.reset()
     document.querySelector<HTMLDialogElement>('[token-modal]')?.close()
@@ -30,10 +34,18 @@ export function TokenModal(props: TokenModalProps) {
     setError('Empty field')
     form.reset()
   }
+
+  createEffect(() => {
+    setTokens(
+      LocalStorageAccess.get('tokens')
+    )
+  })
   
   return (
     <dialog token-modal ref={props.ref}>
       <form ref={formRef!} onSubmit={handleSubmit}>
+        <h3>Add new token</h3>
+
         <input name="token" placeholder="Token" />
         <Show when={error}>
           <span>{error()}</span>
@@ -55,6 +67,39 @@ export function TokenModal(props: TokenModalProps) {
           Cancel
         </button>
       </form>
+
+      <Show when={tokens}>
+        <div class="token-modal-list-container">
+          <h4>Token in use</h4>
+          <Show when={tokenData()} fallback={<p>No token in use</p>} keyed>
+            {token => (
+              <>
+                <span>Organization: {token.organizationSlug}</span>
+                <span>Enterprise: {token.enterpriseSlug}</span>
+                <span>Enterprise Id: {token.enterpriseId}</span>
+              </>
+            )}
+          </Show>
+
+          <br />
+
+          <h4>Tokens in Storage</h4>
+          <ul>
+            <For each={tokens()}>
+              {token => {
+                const isInUse = token.enterpriseId === tokenData()?.enterpriseId
+
+                return (
+                  <li class={isInUse ? 'token-in-use' : ''}>
+                    {token.organizationSlug} / {token.enterpriseSlug}
+                  </li>
+                )
+              }
+              }
+            </For>
+          </ul>
+        </div>
+      </Show>
     </dialog>
   )
 }
