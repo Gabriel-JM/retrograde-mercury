@@ -1,5 +1,5 @@
 /* @refresh reload */
 import { hydrate } from 'solid-js/web'
-import App from './main/App'
+import App from './main/ui/App'
 
 hydrate(() => <App />, document.getElementById('root') as HTMLElement)

@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+}
+
+.header > h1 {
+  margin: 0;
+}
+
+.header > button {
+  width: fit-content;
+  margin: 0;
+}
+
+.token-data-display {
+  background-color: var(--primary);
+  color: #ddd;
+  padding: 8px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.remove-token-btn {
+  padding-left: 10px;
+}
