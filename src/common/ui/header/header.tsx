@@ -28,7 +28,9 @@ export function Header() {
         <h1>Retrograde Mercury</h1>
         <Show when={tokenData()} fallback={changeTokenButton}>
           <div class="token-data-display" onClick={openTokenModal}>
-            {tokenData()?.organizationSlug} / {tokenData()?.enterpriseSlug}
+            {tokenData()?.environment}: 
+            {tokenData()?.organizationSlug} / 
+            {tokenData()?.enterpriseSlug}
             
             <span
               class="remove-token-btn"
@@ -42,8 +44,11 @@ export function Header() {
 
       <TokenModal
         ref={tokenModalRef}
-        onFinish={({ token, saveInStorage }) => {
-          const tokenData = parseToken(token)
+        onFinish={({ environment, token, saveInStorage }) => {
+          const tokenData = {
+            environment,
+            ...parseToken(token)
+          }
           setTokenData(tokenData)
           LocalStorageAccess.set('current-token', tokenData)
 
@@ -53,8 +58,6 @@ export function Header() {
           const alreadyExists = tokens?.find(
             token => token.enterpriseId === tokenData.enterpriseId
           )
-
-          console.log({ alreadyExists })
 
           if (alreadyExists) return
 

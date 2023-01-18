@@ -5,13 +5,21 @@ import { tokenData, TokenData } from '../data'
 
 interface TokenModalProps {
   ref: HTMLDialogElement
-  onFinish: (data: { token: string, saveInStorage: boolean }) => void
+  onFinish: (data: {
+    environment: string,
+    token: string,
+    saveInStorage: boolean
+  }) => void
 }
 
 export function TokenModal(props: TokenModalProps) {
   let formRef: HTMLFormElement
   const [error, setError] = createSignal('')
-  const [tokens, setTokens] = createSignal(null)
+  const [tokens, setTokens] = createSignal<TokenData[] | null>(null)
+
+  const tokensInStorage = () => tokens()?.filter(token => {
+    return token.enterpriseId !== tokenData()?.enterpriseId
+  })
 
   function closeModal() {
     formRef.reset()
@@ -21,11 +29,12 @@ export function TokenModal(props: TokenModalProps) {
   function handleSubmit(event: Event) {
     event.preventDefault()
     const form = event.target as HTMLFormElement
+    const environment = form.environment.value?.trim()
     const token = form.token.value?.trim()
     const saveInStorage = form.saveStorage.checked
 
     if (token) {
-      props.onFinish({ token, saveInStorage })
+      props.onFinish({ environment, token, saveInStorage })
       setError('')
       closeModal()
       return
@@ -46,10 +55,18 @@ export function TokenModal(props: TokenModalProps) {
       <form ref={formRef!} onSubmit={handleSubmit}>
         <h3>Add new token</h3>
 
-        <input name="token" placeholder="Token" />
-        <Show when={error}>
-          <span>{error()}</span>
-        </Show>
+        <label>
+          Environment
+          <input name="environment" />
+        </label>
+
+        <label>
+          Token
+          <input name="token" />
+          <Show when={error}>
+            <small>{error()}</small>
+          </Show>
+        </label>
 
         <fieldset>
           <label>
@@ -74,6 +91,7 @@ export function TokenModal(props: TokenModalProps) {
           <Show when={tokenData()} fallback={<p>No token in use</p>} keyed>
             {token => (
               <>
+                <span>Environment: {token.environment}</span>
                 <span>Organization: {token.organizationSlug}</span>
                 <span>Enterprise: {token.enterpriseSlug}</span>
                 <span>Enterprise Id: {token.enterpriseId}</span>
@@ -85,16 +103,15 @@ export function TokenModal(props: TokenModalProps) {
 
           <h4>Tokens in Storage</h4>
           <ul>
-            <For each={tokens()} fallback={<p>No more tokens in storage</p>}>
-              {token => {
-                const isInUse = token.enterpriseId === tokenData()?.enterpriseId
-
-                return (
-                  !isInUse && <li>
-                    {token.organizationSlug} / {token.enterpriseSlug}
-                  </li>
-                )
-              }}
+            <For
+              each={tokensInStorage()}
+              fallback={<p>No more tokens in storage</p>}
+            >
+              {token => (
+                <li>
+                  {token.environment}: {token.organizationSlug} / {token.enterpriseSlug}
+                </li>
+              )}
             </For>
           </ul>
         </div>
