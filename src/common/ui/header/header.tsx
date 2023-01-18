@@ -7,7 +7,12 @@ import { LocalStorageAccess } from '../../infra/storage'
 
 export function Header() {
   let tokenModalRef!: HTMLDialogElement
-  const openTokenModal = () => tokenModalRef.show()
+  
+  function openTokenModal(event: Event) {
+    if (event.target !== event.currentTarget) return
+    tokenModalRef.show()
+  }
+
   function removeTokenData() {
     setTokenData()
     LocalStorageAccess.delete('current-token')
@@ -22,10 +27,9 @@ export function Header() {
       <header class="header">
         <h1>Retrograde Mercury</h1>
         <Show when={tokenData()} fallback={changeTokenButton}>
-          <div class="token-data-display">
-            <span onClick={openTokenModal}>
-              {tokenData()?.organizationSlug} / {tokenData()?.enterpriseSlug}
-            </span>
+          <div class="token-data-display" onClick={openTokenModal}>
+            {tokenData()?.organizationSlug} / {tokenData()?.enterpriseSlug}
+            
             <span
               class="remove-token-btn"
               onClick={removeTokenData}

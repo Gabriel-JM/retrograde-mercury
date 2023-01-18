@@ -85,17 +85,16 @@ export function TokenModal(props: TokenModalProps) {
 
           <h4>Tokens in Storage</h4>
           <ul>
-            <For each={tokens()}>
+            <For each={tokens()} fallback={<p>No more tokens in storage</p>}>
               {token => {
                 const isInUse = token.enterpriseId === tokenData()?.enterpriseId
 
                 return (
-                  <li class={isInUse ? 'token-in-use' : ''}>
+                  !isInUse && <li>
                     {token.organizationSlug} / {token.enterpriseSlug}
                   </li>
                 )
-              }
-              }
+              }}
             </For>
           </ul>
         </div>
