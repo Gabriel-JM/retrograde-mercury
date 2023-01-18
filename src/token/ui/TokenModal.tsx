@@ -1,7 +1,7 @@
 import './token-modal.css'
 import { createEffect, createSignal, For, Show } from 'solid-js'
 import { LocalStorageAccess } from '../../common/infra/storage'
-import { tokenData, TokenData } from '../data'
+import { setTokenData, tokenData, TokenData } from '../data'
 
 interface TokenModalProps {
   ref: HTMLDialogElement
@@ -18,7 +18,10 @@ export function TokenModal(props: TokenModalProps) {
   const [tokens, setTokens] = createSignal<TokenData[] | null>(null)
 
   const tokensInStorage = () => tokens()?.filter(token => {
-    return token.enterpriseId !== tokenData()?.enterpriseId
+    return (
+      token.enterpriseId !== tokenData()?.enterpriseId ||
+      token.environment !== tokenData()?.environment
+    )
   })
 
   function closeModal() {
@@ -108,7 +111,10 @@ export function TokenModal(props: TokenModalProps) {
               fallback={<p>No more tokens in storage</p>}
             >
               {token => (
-                <li>
+                <li onClick={() => {
+                  setTokenData(token)
+                  closeModal()
+                }}>
                   {token.environment}: {token.organizationSlug} / {token.enterpriseSlug}
                 </li>
               )}

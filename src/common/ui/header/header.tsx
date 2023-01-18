@@ -57,6 +57,7 @@ export function Header() {
           const tokens = LocalStorageAccess.get<TokenData[]>('tokens')
           const alreadyExists = tokens?.find(
             token => token.enterpriseId === tokenData.enterpriseId
+              && token.environment === tokenData.environment
           )
 
           if (alreadyExists) return
