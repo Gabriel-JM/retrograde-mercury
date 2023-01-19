@@ -1,7 +1,8 @@
 import './token-modal.css'
-import { createEffect, createSignal, For, Show } from 'solid-js'
+import { createSignal, For, onMount, Show } from 'solid-js'
 import { LocalStorageAccess } from '../../common/infra/storage'
-import { setTokenData, tokenData, TokenData } from '../data'
+import { setCurrentToken, currentToken, TokenData } from '../data'
+import { TrashIcon } from '../../common/ui'
 
 interface TokenModalProps {
   ref: HTMLDialogElement
@@ -18,9 +19,9 @@ export function TokenModal(props: TokenModalProps) {
   const [tokens, setTokens] = createSignal<TokenData[] | null>(null)
 
   const tokensInStorage = () => tokens()?.filter(token => {
-    return (
-      token.enterpriseId !== tokenData()?.enterpriseId ||
-      token.environment !== tokenData()?.environment
+    return !(
+      token.enterpriseId === currentToken()?.enterpriseId &&
+      token.environment === currentToken()?.environment
     )
   })
 
@@ -47,11 +48,20 @@ export function TokenModal(props: TokenModalProps) {
     form.reset()
   }
 
-  createEffect(() => {
-    setTokens(
-      LocalStorageAccess.get('tokens')
-    )
-  })
+  function deleteToken(token: TokenData) {
+    const filterFunction = (storageToken: TokenData) => {
+      return storageToken.enterpriseId === token.enterpriseId
+        && storageToken.environment === token.environment
+    }
+    LocalStorageAccess.removeFrom('tokens', filterFunction)
+    setTokens(tokens => tokens?.filter(token => !filterFunction(token)) ?? null)
+  }
+
+  const loadTokens = () => setTokens(
+    LocalStorageAccess.get('tokens')
+  )
+
+  onMount(loadTokens)
   
   return (
     <dialog token-modal ref={props.ref}>
@@ -73,7 +83,7 @@ export function TokenModal(props: TokenModalProps) {
 
         <fieldset>
           <label>
-            <input type="checkbox" name="saveStorage" />
+            <input type="checkbox" name="saveStorage" checked />
             Save in local storage
           </label>
         </fieldset>
@@ -88,40 +98,54 @@ export function TokenModal(props: TokenModalProps) {
         </button>
       </form>
 
-      <Show when={tokens}>
-        <div class="token-modal-list-container">
+      <div class="token-modal-list-container">
+        <div class="token-in-use-container">
           <h4>Token in use</h4>
-          <Show when={tokenData()} fallback={<p>No token in use</p>} keyed>
+          <Show when={currentToken()} fallback={<p>No token in use</p>} keyed>
             {token => (
               <>
-                <span>Environment: {token.environment}</span>
-                <span>Organization: {token.organizationSlug}</span>
-                <span>Enterprise: {token.enterpriseSlug}</span>
-                <span>Enterprise Id: {token.enterpriseId}</span>
+                <p>
+                  Environment: {token.environment} <br />
+                  Organization: {token.organizationSlug} <br />
+                  Enterprise: {token.enterpriseSlug} <br />
+                  Enterprise Id: {token.enterpriseId}
+                </p>
+                <button class="secondary" onClick={() => {
+                  deleteToken(currentToken() as TokenData)
+                  setCurrentToken()
+                }}>
+                  <TrashIcon width="20" /> Delete
+                </button>
               </>
             )}
           </Show>
-
-          <br />
-
-          <h4>Tokens in Storage</h4>
-          <ul>
-            <For
-              each={tokensInStorage()}
-              fallback={<p>No more tokens in storage</p>}
-            >
-              {token => (
-                <li onClick={() => {
-                  setTokenData(token)
-                  closeModal()
-                }}>
-                  {token.environment}: {token.organizationSlug} / {token.enterpriseSlug}
-                </li>
-              )}
-            </For>
-          </ul>
         </div>
-      </Show>
+
+        <h4>Tokens in Storage</h4>
+        <ul>
+          <For
+            each={tokensInStorage()}
+            fallback={<p>No more tokens in storage</p>}
+          >
+            {token => (
+              <li onClick={(event: Event) => {
+                if (event.target !== event.currentTarget) return
+
+                setCurrentToken(token)
+                closeModal()
+              }}>
+                {token.environment}: {token.organizationSlug} / {token.enterpriseSlug}
+
+                <TrashIcon
+                  class="delete-token-btn"
+                  width="18"
+                  onClick={() => deleteToken(token)}
+                />
+              </li>
+            )}
+          </For>
+        </ul>
+      </div>
     </dialog>
   )
 }

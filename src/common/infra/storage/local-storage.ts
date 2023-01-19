@@ -27,6 +27,16 @@ export class LocalStorageAccess {
     LocalStorageAccess.set(key, [...items ?? [], data])
   }
 
+  static removeFrom<T = any[]>(key: string, findFn: Function) {
+    if (typeof window === 'undefined') return null
+
+    const items = LocalStorageAccess.get<T>(key)
+
+    if (Array.isArray(items)) {
+      LocalStorageAccess.set(key, items.filter(item => !findFn(item)))
+    }
+  }
+
   static delete(key: string) {
     localStorage.removeItem(prefix + key)
   }

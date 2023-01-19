@@ -1,6 +1,6 @@
 import './header.css'
 import { Show } from 'solid-js'
-import { parseToken, setTokenData, TokenData, tokenData } from '../../../token/data'
+import { parseToken, setCurrentToken, TokenData, currentToken } from '../../../token/data'
 import { TokenModal } from '../../../token/ui'
 import { XIcon } from '../icons'
 import { LocalStorageAccess } from '../../infra/storage'
@@ -14,7 +14,7 @@ export function Header() {
   }
 
   function removeTokenData() {
-    setTokenData()
+    setCurrentToken()
     LocalStorageAccess.delete('current-token')
   }
 
@@ -26,11 +26,11 @@ export function Header() {
     <>
       <header class="header">
         <h1>Retrograde Mercury</h1>
-        <Show when={tokenData()} fallback={changeTokenButton}>
+        <Show when={currentToken()} fallback={changeTokenButton}>
           <div class="token-data-display" onClick={openTokenModal}>
-            {tokenData()?.environment}: 
-            {tokenData()?.organizationSlug} / 
-            {tokenData()?.enterpriseSlug}
+            {currentToken()?.environment}: 
+            {currentToken()?.organizationSlug} / 
+            {currentToken()?.enterpriseSlug}
             
             <span
               class="remove-token-btn"
@@ -49,7 +49,7 @@ export function Header() {
             environment,
             ...parseToken(token)
           }
-          setTokenData(tokenData)
+          setCurrentToken(tokenData)
           LocalStorageAccess.set('current-token', tokenData)
 
           if (!saveInStorage) return

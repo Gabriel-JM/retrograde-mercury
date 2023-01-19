@@ -7,6 +7,6 @@ export interface TokenData {
   enterpriseId: string
 }
 
-const [tokenData, setTokenData] = createSignal<Partial<TokenData>>()
+const [currentToken, setCurrentToken] = createSignal<Partial<TokenData>>()
 
-export { tokenData, setTokenData }
+export { currentToken, setCurrentToken }
