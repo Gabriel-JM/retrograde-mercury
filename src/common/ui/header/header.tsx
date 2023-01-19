@@ -4,9 +4,11 @@ import { parseToken, setCurrentToken, TokenData, currentToken } from '../../../t
 import { TokenModal } from '../../../token/ui'
 import { XIcon } from '../icons'
 import { LocalStorageAccess } from '../../infra/storage'
+import { useNavigate } from '@solidjs/router'
 
 export function Header() {
   let tokenModalRef!: HTMLDialogElement
+  const navigate = useNavigate()
   
   function openTokenModal(event: Event) {
     if (event.target !== event.currentTarget) return
@@ -25,7 +27,9 @@ export function Header() {
   return (
     <>
       <header class="header">
-        <h1>Retrograde Mercury</h1>
+        <h1 onClick={() => navigate('/')}>
+          Retrograde Mercury
+        </h1>
         <Show when={currentToken()} fallback={changeTokenButton}>
           <div class="token-data-display" onClick={openTokenModal}>
             {currentToken()?.environment}: 

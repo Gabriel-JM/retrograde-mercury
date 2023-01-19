@@ -1,13 +1,18 @@
+import './App.css'
 import { onMount } from 'solid-js'
 import { Header } from '../../common/ui'
 import { checkCurrentToken } from '../../token/data/check-current-token'
-import './App.css'
+import { AppRoutes } from './routes'
+import { Router } from '@solidjs/router'
 
 function App() {
   onMount(() => checkCurrentToken())
 
   return (
-    <Header />
+    <Router>
+      <Header />
+      <AppRoutes />
+    </Router>
   )
 }
 
