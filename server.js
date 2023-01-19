@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import express from 'express'
 import { generateHydrationScript } from 'solid-js/web'
+import { router } from './api/routes.js'
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production'
@@ -34,6 +35,8 @@ if (!isProduction) {
   app.use(compression())
   app.use(base, sirv('./dist/client', { extensions: [] }))
 }
+
+app.use(router)
 
 // Serve HTML
 app.use('*', async (req, res) => {

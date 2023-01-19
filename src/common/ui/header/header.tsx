@@ -51,6 +51,7 @@ export function Header() {
         onFinish={({ environment, token, saveInStorage }) => {
           const tokenData = {
             environment,
+            raw: token,
             ...parseToken(token)
           }
           setCurrentToken(tokenData)

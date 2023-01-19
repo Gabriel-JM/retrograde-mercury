@@ -5,6 +5,7 @@ export interface TokenData {
   organizationSlug: string
   enterpriseSlug: string
   enterpriseId: string
+  raw: string
 }
 
 const [currentToken, setCurrentToken] = createSignal<Partial<TokenData>>()
