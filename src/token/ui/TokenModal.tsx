@@ -70,7 +70,12 @@ export function TokenModal(props: TokenModalProps) {
 
         <label>
           Environment
-          <input name="environment" />
+          <select name="environment">
+            <option value="local">Local</option>
+            <option value="dev">Dev</option>
+            <option value="sandbox">Sandbox</option>
+            <option value="prod">Production</option>
+          </select>
         </label>
 
         <label>
@@ -104,12 +109,26 @@ export function TokenModal(props: TokenModalProps) {
           <Show when={currentToken()} fallback={<p>No token in use</p>} keyed>
             {token => (
               <>
-                <p>
-                  Environment: {token.environment} <br />
-                  Organization: {token.organizationSlug} <br />
-                  Enterprise: {token.enterpriseSlug} <br />
-                  Enterprise Id: {token.enterpriseId}
-                </p>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>Environment</td>
+                      <td>{token.environment}</td>
+                    </tr>
+                    <tr>
+                      <td>Organization</td>
+                      <td>{token.organizationSlug}</td>
+                    </tr>
+                    <tr>
+                      <td>Enterprise</td>
+                      <td>{token.enterpriseSlug}</td>
+                    </tr>
+                    <tr>
+                      <td>Enterprise Id</td>
+                      <td>{token.enterpriseId}</td>
+                    </tr>
+                  </tbody>
+                </table>
                 <button class="secondary" onClick={() => {
                   deleteToken(currentToken() as TokenData)
                   setCurrentToken()

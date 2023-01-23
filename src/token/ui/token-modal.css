@@ -19,6 +19,16 @@
   margin-bottom: 10px;
 }
 
+.token-in-use-container table tr td {
+  padding: 0 10px;
+  font-size: 1rem;
+}
+
+.token-in-use-container table tr td:first-child {
+  text-align: right;
+  font-weight: bold;
+}
+
 .token-in-use-container button {
   padding: 8px;
   width: fit-content;
@@ -47,6 +57,7 @@
   transition: background 200ms ease-in-out;
   display: flex;
   align-items: center;
+  text-transform: capitalize;
 }
 
 .token-modal-list-container li:hover {
